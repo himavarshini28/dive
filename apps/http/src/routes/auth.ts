@@ -2,6 +2,7 @@ import { Router } from "express";
 import jwt from "jsonwebtoken";
 import JWT_SECRET from "@repo/backend-common/config";
 import {createSchema,signInSchema} from "@repo/common/types"
+import {prismaClient} from "@repo/db/client";
 const router:Router = Router();
 
 router.use("/signin",(req,res)=>{
@@ -15,7 +16,7 @@ router.use("/signin",(req,res)=>{
         return;
     }
      const userId = 1;   
-    const token= jwt.sign({id:userId},JWT_SECRET);
+    const token= jwt.sign({userId: userId}, JWT_SECRET);  // Changed from 'id' to 'userId'
     if(token)
     {
         res.send(token);

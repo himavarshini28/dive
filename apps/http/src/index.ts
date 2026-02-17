@@ -1,6 +1,7 @@
 import express from "express";
 import authRoutes from "./routes/auth";
 import roomRoutes from "./routes/room";
+import { prismaClient } from "@repo/db/client";
 const app = express();
 const PORT = 3001;
 
