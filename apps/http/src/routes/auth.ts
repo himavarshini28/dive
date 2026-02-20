@@ -16,7 +16,7 @@ router.use("/signin",(req,res)=>{
         return;
     }
      const userId = 1;   
-    const token= jwt.sign({userId: userId}, JWT_SECRET);  // Changed from 'id' to 'userId'
+    const token= jwt.sign({id:userId},JWT_SECRET);
     if(token)
     {
         res.send(token);
@@ -27,8 +27,7 @@ router.use("/signin",(req,res)=>{
     }
 });
 
-router.use("signup",(req,res)=>{
-    //TODO:zod validation
+router.use("signup",async (req,res)=>{
     const input=createSchema.safeParse(req.body);
     if(!input.success)
     {
@@ -37,7 +36,28 @@ router.use("signup",(req,res)=>{
         })
         return;
     }
-   //TODO:credentials saved on DB
+    try {
+        
+        await prismaClient.user.create(
+            {
+                data:{
+                    email: input.data.email,
+                    username:input.data.username,
+                    password:input.data.password
+                }
+            }
+
+        )
+        res.json({
+            userId:"123"
+        })
+    } catch (error) {
+        res.status(409).json({
+            message: "user already exists with the given email/username"
+        })
+    }
+   
+  
 });
 
 export default router;
