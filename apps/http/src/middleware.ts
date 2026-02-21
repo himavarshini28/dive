@@ -1,16 +1,34 @@
-import express, { Request, NextFunction, Response } from "express"
+import express, { Request, NextFunction, Response, RequestHandler } from "express"
 import jwt  from "jsonwebtoken";
 import JWT_SECRET from "@repo/backend-common/config";
-const authMiddleware=(req:Request,res:Response,next:NextFunction)=>{
-     const token=req.headers.authorization;
-    const decode=jwt.verify(token ||"",JWT_SECRET);
-    if(decode)
-    { //@ts-ignore
-        req.decode=decode ;
-    }
-    else 
-    {
-        res.status(401).send("Invalid or missing token");
+
+export interface authRequest extends Request
+{
+    userId: string
+}
+
+const authMiddleware: RequestHandler = (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const token=req.headers.authorization;
+        if (!token) {
+            res.status(401).send("Missing token");
+            return;
+        }
+        
+        const decode = jwt.verify(token, JWT_SECRET) as { id: string };
+        if(decode)
+        {
+            (req as authRequest).userId = decode.id;
+            next(); 
+        }
+        else 
+        {
+            res.status(401).send("Invalid token");
+            return; 
+        }
+    } catch (error) {
+        res.status(401).send("Invalid or expired token");
+        return;
     }
 }
 

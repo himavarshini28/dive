@@ -9,11 +9,11 @@ z.object({
 
 export const signInSchema =
 z.object({
-    username: z.string().min(3).max(20),
+    email: z.string().email(),
     password: z.string().min(3).max(20)
 })
 
 export const createRoomSchema =
 z.object({
-    name:z.string().min(2).max(30)
+    name:z.string().min(2).max(50)
 })
